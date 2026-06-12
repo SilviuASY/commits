@@ -9,8 +9,17 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
       - name: Create 100 commits
         run: |
           for i in {1..100}
@@ -20,5 +29,6 @@ jobs:
             git commit -m "Add file $i"
           done
           
-      - name: Push all commits
-        run: git push
+      - name: Push changes
+        run: |
+          git push origin HEAD:${{ github.ref_name }} --force
